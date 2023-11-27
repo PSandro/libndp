@@ -124,6 +124,7 @@ enum ndp_msg_opt_type {
 	NDP_MSG_OPT_ROUTE, /* Route Information */
 	NDP_MSG_OPT_RDNSS, /* Recursive DNS Server */
 	NDP_MSG_OPT_DNSSL, /* DNS Search List */
+	NDP_MSG_OPT_CAPTIVE_PORTAL, /* Captive Portal URI */
 };
 
 int ndp_msg_next_opt_offset(struct ndp_msg *msg, int offset,
@@ -175,6 +176,7 @@ char *ndp_msg_opt_dnssl_domain(struct ndp_msg *msg, int offset,
 	     domain;								\
 	     domain = ndp_msg_opt_dnssl_domain(msg, offset, ++domain_index))
 
+char *ndp_msg_opt_captive_portal(struct ndp_msg *msg, int offset);
 typedef int (*ndp_msgrcv_handler_func_t)(struct ndp *ndp, struct ndp_msg *msg,
 					 void *priv);
 int ndp_msgrcv_handler_register(struct ndp *ndp, ndp_msgrcv_handler_func_t func,

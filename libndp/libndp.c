@@ -1266,6 +1266,10 @@ static struct ndp_msg_opt_type_info ndp_msg_opt_type_info_list[] =
 		.raw_type = __ND_OPT_DNSSL,
 		.raw_struct_size = sizeof(struct __nd_opt_dnssl),
 	},
+	[NDP_MSG_OPT_CAPTIVE_PORTAL] = {
+		.raw_type = __ND_OPT_CAPTIVE_PORTAL,
+		.raw_struct_size = sizeof(struct __nd_opt_captive_portal),
+	},
 };
 
 #define NDP_MSG_OPT_TYPE_LIST_SIZE ARRAY_SIZE(ndp_msg_opt_type_info_list)
@@ -1808,6 +1812,40 @@ char *ndp_msg_opt_dnssl_domain(struct ndp_msg *msg, int offset,
 			return buf;
 	}
 	return NULL;
+}
+
+/**
+ * ndp_msg_option_captive_portal:
+ * @msg: message structure
+ * @offset: in-message offset
+ *
+ * Get Captive-Portal URI.
+ *
+ * Returns: uri.
+ **/
+NDP_EXPORT
+char *ndp_msg_opt_captive_portal(struct ndp_msg *msg, int offset)
+{
+	static NDP_THREAD char buf[256];
+	struct __nd_opt_captive_portal *cap_port =
+			ndp_msg_payload_opts_offset(msg, offset);
+	size_t len = cap_port->nd_opt_captive_portal_len << 3; /* convert to bytes */
+	char *ptr;
+
+	len -= in_struct_offset(struct __nd_opt_captive_portal, nd_opt_captive_portal_uri);
+	ptr = cap_port->nd_opt_captive_portal_uri;
+
+    if (len + 1 > sizeof(buf)) {
+      return NULL;
+    }
+
+    if (len > 0 && *ptr) {
+          memcpy(buf, ptr, len);
+          buf[len - 1] = '\0';
+          return buf;
+    }
+
+    return NULL;
 }
 
 static int ndp_call_handlers(struct ndp *ndp, struct ndp_msg *msg);
